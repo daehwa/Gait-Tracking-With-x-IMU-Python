@@ -22,11 +22,6 @@ samplePeriod = 1/256
 # stopTime = 47
 # samplePeriod = 1/256
 
-# filePath = 'datasets/spiralStairs'
-# startTime = 1
-# stopTime = 4
-# samplePeriod = 1/(2000/3)
-
 
 def main():
     xIMUdata = xIMU.xIMUdataClass(filePath, 'InertialMagneticSampleRate', 1/samplePeriod)
@@ -74,6 +69,9 @@ def main():
     plt.plot(time,accZ,c='b',linewidth=0.5)
     plt.plot(time,acc_magFilt,c='k',linestyle=":",linewidth=1)
     plt.plot(time,stationary,c='k')
+    plt.title("accelerometer")
+    plt.xlabel("time (s)")
+    plt.ylabel("accelerometer (g)")
     plt.show(block=False)
 
     # Compute orientation
@@ -113,30 +111,32 @@ def main():
     # Compute translational velocities
     # acc[:,2] = acc[:,2] - 9.81
 
-    acc_offset = np.zeros(3)
+    # acc_offset = np.zeros(3)
     vel = np.zeros(acc.shape)
     for t in range(1,vel.shape[0]):
-        vel[t,:] = vel[t-1,:] + (acc[t,:] - acc_offset)*samplePeriod
+        vel[t,:] = vel[t-1,:] + acc[t,:]*samplePeriod
         if stationary[t] == True:
-            acc_offset = acc[t,:]
             vel[t,:] = np.zeros(3)
 
     # Compute integral drift during non-stationary periods
-    # velDrift = np.zeros(vel.shape)
-    # stationaryStart = np.where(np.diff(stationary.astype(int)) == -1)[0]+1
-    # stationaryEnd = np.where(np.diff(stationary.astype(int)) == 1)[0]+1
-    # for i in range(0,stationaryEnd.shape[0]):
-    #     driftRate = vel[stationaryEnd[i]-1,:] / (stationaryEnd[i] - stationaryStart[i])
-    #     enum = np.arange(0,stationaryEnd[i]-stationaryStart[i])
-    #     drift = np.array([enum*driftRate[0], enum*driftRate[1], enum*driftRate[2]]).T
-    #     velDrift[stationaryStart[i]:stationaryEnd[i],:] = drift
+    velDrift = np.zeros(vel.shape)
+    stationaryStart = np.where(np.diff(stationary.astype(int)) == -1)[0]+1
+    stationaryEnd = np.where(np.diff(stationary.astype(int)) == 1)[0]+1
+    for i in range(0,stationaryEnd.shape[0]):
+        driftRate = vel[stationaryEnd[i]-1,:] / (stationaryEnd[i] - stationaryStart[i])
+        enum = np.arange(0,stationaryEnd[i]-stationaryStart[i])
+        drift = np.array([enum*driftRate[0], enum*driftRate[1], enum*driftRate[2]]).T
+        velDrift[stationaryStart[i]:stationaryEnd[i],:] = drift
 
     # Remove integral drift
-    # vel = vel - velDrift
+    vel = vel - velDrift
     fig = plt.figure(figsize=(10, 5))
     plt.plot(time,vel[:,0],c='r',linewidth=0.5)
     plt.plot(time,vel[:,1],c='g',linewidth=0.5)
     plt.plot(time,vel[:,2],c='b',linewidth=0.5)
+    plt.title("velocity")
+    plt.xlabel("time (s)")
+    plt.ylabel("velocity (m/s)")
     plt.show(block=False)
 
     # -------------------------------------------------------------------------
@@ -149,6 +149,9 @@ def main():
     plt.plot(time,pos[:,0],c='r',linewidth=0.5)
     plt.plot(time,pos[:,1],c='g',linewidth=0.5)
     plt.plot(time,pos[:,2],c='b',linewidth=0.5)
+    plt.title("position")
+    plt.xlabel("time (s)")
+    plt.ylabel("position (m)")
     plt.show(block=False)
 
     # -------------------------------------------------------------------------
@@ -159,11 +162,6 @@ def main():
 
     extraTime = 20
     onesVector = np.ones(int(extraTime*(1/samplePeriod)))
-    # tail = np.array([posPlot[-1, 0]*onesVector, posPlot[-1, 1]*onesVector, posPlot[-1, 2]*onesVector]).T
-    # print(posPlot.shape, tail.shape)
-    # posPlot = np.concatenate((posPlot, tail), axis=0)
-    # tail = np.array([quatPlot[-1, 0]*onesVector, quatPlot[-1, 1]*onesVector, quatPlot[-1, 2]*onesVector]).T
-    # quatPlot = np.concatenate((quatPlot, tail), axis=0)
 
     # Create 6 DOF animation
     fig = plt.figure(figsize=(7, 7))
@@ -173,6 +171,10 @@ def main():
     ax.set_xlim(min_,max_)
     ax.set_ylim(min_,max_)
     ax.set_zlim(min_,max_)
+    ax.set_title("trajectory")
+    ax.set_xlabel("x position (m)")
+    ax.set_ylabel("y position (m)")
+    ax.set_zlabel("z position (m)")
     plt.show(block=False)
     
     plt.show()
