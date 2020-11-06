@@ -7,20 +7,20 @@ from scipy import signal
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-filePath = 'datasets/straightLine'
-startTime = 6
-stopTime = 26
-samplePeriod = 1/256
+# filePath = 'datasets/straightLine'
+# startTime = 6
+# stopTime = 26
+# samplePeriod = 1/256
 
 # filePath = 'datasets/stairsAndCorridor'
 # startTime = 5
 # stopTime = 53
 # samplePeriod = 1/256
 
-# filePath = 'datasets/spiralStairs'
-# startTime = 4
-# stopTime = 47
-# samplePeriod = 1/256
+filePath = 'datasets/spiralStairs'
+startTime = 4
+stopTime = 47
+samplePeriod = 1/256
 
 
 def main():
@@ -64,14 +64,24 @@ def main():
     stationary = acc_magFilt < 0.05
 
     fig = plt.figure(figsize=(10, 5))
-    plt.plot(time,accX,c='r',linewidth=0.5)
-    plt.plot(time,accY,c='g',linewidth=0.5)
-    plt.plot(time,accZ,c='b',linewidth=0.5)
-    plt.plot(time,acc_magFilt,c='k',linestyle=":",linewidth=1)
-    plt.plot(time,stationary,c='k')
-    plt.title("accelerometer")
-    plt.xlabel("time (s)")
-    plt.ylabel("accelerometer (g)")
+    ax1 = fig.add_subplot(2,1,1)
+    ax2 = fig.add_subplot(2,1,2)
+    ax1.plot(time,gyrX,c='r',linewidth=0.5)
+    ax1.plot(time,gyrY,c='g',linewidth=0.5)
+    ax1.plot(time,gyrZ,c='b',linewidth=0.5)
+    ax1.set_title("gyroscope")
+    ax1.set_xlabel("time (s)")
+    ax1.set_ylabel("angular velocity (degrees/s)")
+    ax1.legend(["x","y","z"])
+    ax2.plot(time,accX,c='r',linewidth=0.5)
+    ax2.plot(time,accY,c='g',linewidth=0.5)
+    ax2.plot(time,accZ,c='b',linewidth=0.5)
+    ax2.plot(time,acc_magFilt,c='k',linestyle=":",linewidth=1)
+    ax2.plot(time,stationary,c='k')
+    ax2.set_title("accelerometer")
+    ax2.set_xlabel("time (s)")
+    ax2.set_ylabel("acceleration (g)")
+    ax2.legend(["x","y","z"])
     plt.show(block=False)
 
     # Compute orientation
@@ -134,6 +144,7 @@ def main():
     plt.plot(time,vel[:,0],c='r',linewidth=0.5)
     plt.plot(time,vel[:,1],c='g',linewidth=0.5)
     plt.plot(time,vel[:,2],c='b',linewidth=0.5)
+    plt.legend(["x","y","z"])
     plt.title("velocity")
     plt.xlabel("time (s)")
     plt.ylabel("velocity (m/s)")
@@ -149,6 +160,7 @@ def main():
     plt.plot(time,pos[:,0],c='r',linewidth=0.5)
     plt.plot(time,pos[:,1],c='g',linewidth=0.5)
     plt.plot(time,pos[:,2],c='b',linewidth=0.5)
+    plt.legend(["x","y","z"])
     plt.title("position")
     plt.xlabel("time (s)")
     plt.ylabel("position (m)")
