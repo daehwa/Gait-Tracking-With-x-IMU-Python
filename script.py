@@ -113,7 +113,7 @@ def main():
     # Rotate body accelerations to Earth frame
     acc = []
     for x,y,z,q in zip(accX,accY,accZ,quat):
-        acc.append(q_rot(np.array([x, y, z]), q_conj(q)))
+        acc.append(q_rot(q_conj(q), np.array([x, y, z])))
     acc = np.array(acc)
     acc = acc - np.array([0,0,1])
     acc = acc * 9.81
