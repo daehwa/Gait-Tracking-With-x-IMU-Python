@@ -1,2 +1,4 @@
 pyquaternion
 ahrs
+scipy
+matplotlib
